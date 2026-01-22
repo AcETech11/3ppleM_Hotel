@@ -36,13 +36,17 @@ const Navbar = () => {
   ];
 
   const menuVariants = {
-    closed: { opacity: 0, x: "100%" },
-    open: { 
-      opacity: 1, 
+    open: {
+      opacity: 1,
       x: 0,
-      transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } 
+      transition: { duration: 0.5, ease: [0.6, 0.05, -0.01, 0.9] as any }
+    },
+    closed: {
+      opacity: 0,
+      x: "100%",
+      transition: { duration: 0.5 }
     }
-  };
+  }
 
   const linkVariants = {
     closed: { opacity: 0, y: 20 },

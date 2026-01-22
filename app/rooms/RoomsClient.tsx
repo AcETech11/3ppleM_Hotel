@@ -67,7 +67,7 @@ export default function RoomsPage() {
                     src={room.thumbnail ? urlFor(room.thumbnail).width(1200).url() : "/fallback-room.jpg"}
                     alt={room.title}
                     fill
-                    className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out"
+                    className="object-cover lg:grayscale lg:group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out"
                   />
                   
                   {/* Price Tag Overlay */}

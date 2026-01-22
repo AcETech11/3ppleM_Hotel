@@ -41,7 +41,7 @@ export default function JournalClient({ initialPosts }: { initialPosts: any[] })
                     src={post.mainImage ? urlFor(post.mainImage).width(600).url() : "/fallback.jpg"}
                     alt={post.title}
                     fill
-                    className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out"
+                    className="object-cover lg:grayscale lg:group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out"
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
                   

@@ -106,7 +106,7 @@ export default function JournalArchive() {
                     src={urlFor(post.mainImage).width(800).url()}
                     alt={post.title}
                     fill
-                    className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
+                    className="object-cover lg:grayscale lg:group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
                   />
                 </div>
                 <span className="text-[9px] text-stone-500 font-bold tracking-[0.3em] uppercase">

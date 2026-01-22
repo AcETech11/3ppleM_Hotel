@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar"; // Ensure your Navbar is imported here
 import GoogleSchema from "@/components/GoogleSchema";
 
 const cormorant = Cormorant_Garamond({
@@ -72,9 +71,6 @@ export default function RootLayout({
       <body
         className={`${cormorant.variable} ${jakarta.variable} font-sans antialiased bg-[#0D0D0D] text-white`}
       >
-        {/* Navbar added here so it stays consistent across all pages */}
-        {/* <Navbar /> */}
-        
         {/* main tag helps SEO 'spiders' identify your primary content */}
         <main className="relative min-h-screen">
           {children}

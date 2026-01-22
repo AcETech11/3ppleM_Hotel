@@ -106,6 +106,7 @@ export default function ManagementHome() {
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button className="flex items-center justify-between p-6 bg-[#0D0D0D] border border-white/5 hover:border-[#C5A059]/50 transition-all text-left group">
+              <Link href="/management/journal">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-white/5 text-[#C5A059]"><PenTool size={18}/></div>
                 <div>
@@ -113,9 +114,11 @@ export default function ManagementHome() {
                   <p className="text-[10px] text-stone-600 uppercase">Write story</p>
                 </div>
               </div>
+              </Link>
               <Plus size={16} className="text-stone-700 group-hover:text-white" />
             </button>
             <button className="flex items-center justify-between p-6 bg-[#0D0D0D] border border-white/5 hover:border-[#C5A059]/50 transition-all text-left group">
+              <Link href="/management/gallery">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-white/5 text-[#C5A059]"><ImageIcon size={18}/></div>
                 <div>
@@ -123,6 +126,7 @@ export default function ManagementHome() {
                   <p className="text-[10px] text-stone-600 uppercase">Upload sets</p>
                 </div>
               </div>
+              </Link>
               <Plus size={16} className="text-stone-700 group-hover:text-white" />
             </button>
           </div>

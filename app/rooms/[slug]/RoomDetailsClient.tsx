@@ -101,7 +101,7 @@ export default function RoomDetailsClient({ room }: { room: any }) {
       <section className="max-w-7xl mx-auto px-6 py-12">
         <h3 className="text-[#C5A059] text-[10px] uppercase tracking-[0.5em] mb-12 text-center">Visual Perspective</h3>
         <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-          {room.gallery.map((img: any, i: number) => (
+          {room.gallery?.map((img: any, i: number) => (
             <motion.div 
               key={i} 
               initial={{ opacity: 0, scale: 0.9 }}

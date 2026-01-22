@@ -13,45 +13,60 @@ export default function RoomsClient({ initialRooms }: { initialRooms: any[] }) {
   const [translateX, setTranslateX] = useState(0);
 
   const { scrollYProgress } = useScroll({ target: targetRef });
-  const xRaw = useTransform(scrollYProgress, [0.1, 1], [0, translateX]);
-  const x = useSpring(xRaw, { stiffness: 40, damping: 15 });
+  
+  // Smooth the scroll transition
+  const xRaw = useTransform(scrollYProgress, [0, 1], [0, translateX]);
+  const x = useSpring(xRaw, { stiffness: 50, damping: 20, mass: 0.5 });
 
-  const titleY = useTransform(scrollYProgress, [0, 1], ["0%", "-15%"]);
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.2, 0.5], [1, 0.8, 0]);
+  const titleY = useTransform(scrollYProgress, [0, 1], ["0%", "-20%"]);
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.2, 0.4], [1, 0.5, 0]);
 
   useEffect(() => {
     const updateScroll = () => {
-      if (trackRef.current && initialRooms.length > 0) {
-        const scrollDistance = trackRef.current.scrollWidth - window.innerWidth;
-        setTranslateX(-(scrollDistance + window.innerWidth * 0.05)); 
+      if (trackRef.current) {
+        // Calculate the total width of the content minus the visible screen width
+        const trackWidth = trackRef.current.scrollWidth;
+        const viewportWidth = window.innerWidth;
+        // We subtract viewportWidth to stop exactly at the last card
+        setTranslateX(-(trackWidth - viewportWidth));
       }
     };
+
     updateScroll();
+    // Use a small timeout to ensure Sanity images/layout are settled
+    const timeout = setTimeout(updateScroll, 500);
+    
     window.addEventListener("resize", updateScroll);
-    return () => window.removeEventListener("resize", updateScroll);
+    return () => {
+      window.removeEventListener("resize", updateScroll);
+      clearTimeout(timeout);
+    };
   }, [initialRooms]);
 
   return (
     <section ref={targetRef} className="relative h-[400vh] bg-[#050505]">
-      <div className="sticky top-0 h-screen flex flex-col justify-start md:justify-center overflow-hidden">
+      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
         
+        {/* Background Large Text */}
         <motion.div 
           style={{ y: titleY, opacity: titleOpacity }}
-          className="absolute top-[10vh] md:top-[12vh] left-0 w-full px-6 md:px-20 z-0 pointer-events-none"
+          className="absolute top-[12vh] left-0 w-full px-6 md:px-20 z-0 pointer-events-none"
         >
-          <p className="font-sans text-[10px] text-[#C5A059] uppercase tracking-[0.5em] mb-4 drop-shadow-md">
+          <p className="font-sans text-[10px] text-[#C5A059] uppercase tracking-[0.5em] mb-4">
             The Collection
           </p>
-          <h2 className="text-6xl md:text-[11rem] font-serif text-white/[0.07] leading-[0.9] uppercase italic font-black tracking-tighter">
+          <h2 className="text-6xl md:text-[11rem] font-serif text-white/[0.05] leading-[0.9] uppercase italic font-black tracking-tighter">
             Absolute <br/> Comfort
           </h2>
         </motion.div>
 
-        <div className="relative z-10 mt-[32vh] md:mt-0">
+        {/* Horizontal Scroll Track */}
+        <div className="relative z-10">
           <motion.div 
             ref={trackRef}
             style={{ x }} 
-            className="flex gap-5 md:gap-16 px-[6vw] w-max items-center"
+            // Added flex-nowrap and extra padding-right to prevent desktop overlapping
+            className="flex flex-nowrap gap-6 md:gap-16 px-[10vw] pr-[25vw] w-max items-center"
           >
             {initialRooms.map((room, i) => (
               <RoomCard key={room.slug || i} room={room} index={i} />
@@ -59,20 +74,29 @@ export default function RoomsClient({ initialRooms }: { initialRooms: any[] }) {
           </motion.div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="absolute bottom-10 left-6 md:left-20 flex items-center gap-4 z-20">
-            <span className="text-[#C5A059] font-sans text-[10px] font-bold">01</span>
-            <div className="w-24 md:w-64 h-[2px] bg-white/5 relative">
-                <motion.div style={{ scaleX: scrollYProgress }} className="absolute inset-0 bg-[#C5A059] origin-left" />
+        {/* Bottom UI / Progress */}
+        <div className="absolute bottom-12 left-6 md:left-20 flex items-center gap-8 z-20">
+            <div className="flex flex-col">
+                <span className="text-[#C5A059] font-sans text-[10px] font-bold tracking-widest">SCROLL</span>
+                <span className="text-white/20 font-sans text-[10px]">TO EXPLORE</span>
             </div>
-            <span className="text-white/20 font-sans text-[10px]">0{initialRooms.length}</span>
+            
+            <div className="w-32 md:w-64 h-[1px] bg-white/10 relative">
+                <motion.div 
+                  style={{ scaleX: scrollYProgress }} 
+                  className="absolute inset-0 bg-[#C5A059] origin-left" 
+                />
+            </div>
+            
+            <div className="text-white/40 font-serif italic text-lg">
+                0{initialRooms.length}
+            </div>
         </div>
       </div>
     </section>
   );
 }
 
-// RoomCard component remains the same logic as your original snippet
 function RoomCard({ room, index }: any) {
   return (
     <motion.div className="flex-shrink-0 group">
@@ -82,46 +106,52 @@ function RoomCard({ room, index }: any) {
           tiltMaxAngleY={2}
           perspective={1000}
           tiltEnable={typeof window !== 'undefined' && window.innerWidth > 768}
-          className="w-[85vw] md:w-[500px] h-[55vh] md:h-[620px] bg-neutral-900 border border-white/10 relative overflow-hidden shadow-2xl"
+          className="w-[85vw] md:w-[480px] h-[60vh] md:h-[650px] bg-neutral-900 border border-white/5 relative overflow-hidden shadow-2xl rounded-sm"
         >
+          {/* Image Layer */}
           <div className="absolute inset-0">
             {room.mainImage && (
               <Image 
-                src={urlFor(room.mainImage).width(1000).height(1200).url()} 
+                src={urlFor(room.mainImage).width(800).height(1100).url()} 
                 alt={room.title} 
                 fill 
-                className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-[2s] ease-out" 
+                className="object-cover opacity-80 group-hover:scale-110 transition-transform duration-[2.5s] ease-out" 
+                sizes="(max-width: 768px) 85vw, 480px"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90" />
           </div>
 
-          <div className="absolute top-6 left-8 flex items-center gap-3">
-             <span className="text-white/30 font-serif italic text-4xl">0{index + 1}</span>
+          {/* Room Number */}
+          <div className="absolute top-8 left-8">
+             <span className="text-white/10 font-serif italic text-6xl">0{index + 1}</span>
           </div>
 
-          <div className="absolute bottom-0 left-0 w-full p-8 md:p-10">
-            <div className="mb-4">
-              <p className="text-[#C5A059] text-[11px] font-black tracking-[0.3em] uppercase mb-1">
+          {/* Info Layer */}
+          <div className="absolute bottom-0 left-0 w-full p-8 md:p-12">
+            <div className="mb-6">
+              <p className="text-[#C5A059] text-[10px] font-bold tracking-[0.4em] uppercase mb-2">
                 ₦{Number(room.price).toLocaleString()} / Night
               </p>
-              <h3 className="text-3xl md:text-4xl font-serif text-white uppercase leading-tight tracking-wide">
-                {room.title}
+              <h3 className="text-3xl md:text-5xl font-serif text-white uppercase leading-none tracking-tighter">
+                {room.title.split(' ').map((word: string, i: number) => (
+                  <span key={i} className={i === 1 ? "italic block" : ""}>{word} </span>
+                ))}
               </h3>
             </div>
             
-            <div className="flex items-center justify-between pt-5 border-t border-white/20">
-              <div className="flex gap-5">
-                <div className="flex items-center gap-2 text-[9px] text-white/70 uppercase tracking-widest font-bold">
+            <div className="flex items-center justify-between pt-6 border-t border-white/10">
+              <div className="flex gap-6">
+                <div className="flex items-center gap-2 text-[9px] text-white/50 uppercase tracking-widest font-bold">
                   <Wifi size={14} className="text-[#C5A059]" /> Wi-Fi
                 </div>
-                <div className="flex items-center gap-2 text-[9px] text-white/70 uppercase tracking-widest font-bold">
+                <div className="flex items-center gap-2 text-[9px] text-white/50 uppercase tracking-widest font-bold">
                   <BedDouble size={14} className="text-[#C5A059]" /> King Bed
                 </div>
               </div>
               
-              <div className="w-12 h-12 rounded-full border border-[#C5A059]/50 flex items-center justify-center text-white bg-black/40 group-hover:bg-[#C5A059] transition-all duration-500">
-                <ChevronRight size={24} />
+              <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white group-hover:bg-[#C5A059] group-hover:border-[#C5A059] group-hover:text-black transition-all duration-500">
+                <ChevronRight size={20} />
               </div>
             </div>
           </div>

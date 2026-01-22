@@ -1,16 +1,26 @@
-// /rooms/[slug]/page.tsx (Server Component)
 import { client } from "@/lib/sanity/client";
 import RoomDetailsClient from "./RoomDetailsClient";
 import { Metadata } from "next";
 
-// This helps SEO: The tab title will now show the actual Room Name
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const { slug } = params;
-  return { title: `${slug.charAt(0).toUpperCase() + slug.slice(1)} | 3PPLEM Sanctuary` };
+// 1. Fix Metadata by awaiting params
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> 
+}): Promise<Metadata> {
+  const { slug } = await params;
+  return { 
+    title: `${slug.charAt(0).toUpperCase() + slug.slice(1)} | 3PPLEM Sanctuary` 
+  };
 }
 
-export default async function RoomPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function RoomPage({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> 
+}) {
+  // 2. CRITICAL FIX: Await params before using slug
+  const { slug } = await params;
 
   const query = `*[_type == "room" && slug.current == $slug][0] {
     title,
@@ -21,15 +31,33 @@ export default async function RoomPage({ params }: { params: { slug: string } })
     "videoUrl": videoTour.asset->url
   }`;
 
-  // This is the CRITICAL part: the 'room' tag
-  const room = await client.fetch(query, { slug }, {
-    next: { 
-      tags: ['room'], 
-      revalidate: 3600 
+  try {
+    const room = await client.fetch(query, { slug }, {
+      next: { 
+        tags: ['room'], 
+        revalidate: 3600 
+      }
+    });
+
+    // 3. Safety Check: If room doesn't exist, don't pass null to Client Component
+    if (!room) {
+      return (
+        <div className="h-screen bg-[#050505] flex flex-col items-center justify-center text-center px-6">
+          <h2 className="font-serif text-[#C5A059] text-3xl mb-4 italic">Sanctuary not found</h2>
+          <p className="text-stone-500 text-xs uppercase tracking-widest">This room may have been moved or renamed.</p>
+        </div>
+      );
     }
-  });
 
-  if (!room) return <div className="h-screen bg-[#0D0D0D] flex items-center justify-center text-[#C5A059]">Sanctuary not found.</div>;
-
-  return <RoomDetailsClient room={room} />;
+    return <RoomDetailsClient room={room} />;
+    
+  } catch (error) {
+    // 4. Log the actual error to your Vercel console for debugging
+    console.error("Sanity Fetch Error:", error);
+    return (
+      <div className="h-screen bg-[#050505] flex items-center justify-center text-[#C5A059]">
+        An error occurred while preparing your sanctuary.
+      </div>
+    );
+  }
 }

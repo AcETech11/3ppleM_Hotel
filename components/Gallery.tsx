@@ -75,7 +75,7 @@ export default function Gallery() {
                 tiltMaxAngleX={3} 
                 tiltMaxAngleY={3} 
                 className="w-full h-full"
-                enableTilt={typeof window !== 'undefined' && window.innerWidth > 768}
+                tiltEnable={typeof window !== 'undefined' && window.innerWidth > 768}
               >
                 <div className="relative w-full h-full overflow-hidden rounded-sm border border-white/5">
                   <Image 

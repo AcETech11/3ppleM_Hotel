@@ -3,18 +3,20 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, MessageCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // 1. Lock Body Scroll when menu is open
+  // Lock Body Scroll
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none"; // Extra fix for mobile browsers
     } else {
       document.body.style.overflow = "unset";
+      document.body.style.touchAction = "auto";
     }
     return () => { document.body.style.overflow = "unset"; };
   }, [isOpen]);
@@ -24,7 +26,7 @@ const Navbar = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -35,44 +37,49 @@ const Navbar = () => {
     { name: "Journal", href: "/journal" },
   ];
 
-  const menuVariants = {
-    open: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.5, ease: [0.6, 0.05, -0.01, 0.9] as any }
-    },
-    closed: {
-      opacity: 0,
-      x: "100%",
-      transition: { duration: 0.5 }
-    }
-  }
+  const menuVariants: Variants = {
+      open: {
+        opacity: 1,
+        x: 0,
+        transition: { 
+          duration: 0.4, 
+          // Use the string "ease" for simple ones, or cast your array as any
+          ease: [0.6, 0.05, -0.01, 0.9] 
+        }
+      },
+      closed: {
+        opacity: 0,
+        x: "100%",
+        transition: { duration: 0.3 }
+      }
+    };
 
-  const linkVariants = {
-    closed: { opacity: 0, y: 20 },
-    open: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: { delay: 0.1 * i, duration: 0.5 }
-    })
-  };
+    const linkVariants: Variants = {
+      closed: { opacity: 0, y: 20 },
+      open: (i: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: { delay: 0.1 * i, duration: 0.5 }
+      })
+    };  
 
   return (
     <nav 
       className={`fixed top-0 w-full z-[100] transition-all duration-500 ${
         scrolled 
-          ? "h-16 bg-black/90 backdrop-blur-xl border-b border-white/10" 
+          ? "h-16 bg-black/95 backdrop-blur-xl border-b border-white/10" 
           : "h-24 bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
         
-        {/* Logo */}
-        <Link href="/" className="relative w-32 h-10 transition-transform hover:scale-105 z-[110]">
+        {/* Logo - Added specific sizes for performance optimization */}
+        <Link href="/" className="relative w-32 h-10 transition-transform hover:scale-105 z-[110]" aria-label="3PPLEM Home">
           <Image 
             src="/3ppleM_Logo.png" 
             alt="3PPLEM Logo" 
             fill 
+            sizes="128px"
             className="object-contain"
             priority
           />
@@ -98,29 +105,31 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Mobile Toggle - Key Fix: Higher Z-Index */}
+        {/* Mobile Toggle - Improved Hit Area & Z-Index */}
         <button 
-          className="md:hidden z-[120] text-white p-2" 
+          className="md:hidden z-[120] text-white p-4 -mr-4 flex items-center justify-center" 
           onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle Menu"
+          aria-expanded={isOpen}
+          aria-controls="mobile-menu"
+          aria-label={isOpen ? "Close Menu" : "Open Menu"}
         >
-          {isOpen ? <X size={32} strokeWidth={1} /> : <Menu size={32} strokeWidth={1} />}
+          {isOpen ? <X size={32} strokeWidth={1.5} /> : <Menu size={32} strokeWidth={1.5} />}
         </button>
       </div>
 
       {/* Mobile Menu Overlay */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div 
+            id="mobile-menu"
             variants={menuVariants}
             initial="closed"
             animate="open"
             exit="closed"
-            // Key Fix: h-screen and fixed inset-0 ensures it fills the viewport exactly
-            className="fixed inset-0 h-screen w-screen bg-[#0D0D0D] z-[105] flex flex-col justify-center px-10 md:hidden overflow-hidden"
+            className="fixed inset-0 h-screen w-screen bg-[#0D0D0D] z-[105] flex flex-col justify-center px-10 md:hidden"
           >
             {/* Background Decorative Text */}
-            <div className="absolute top-20 left-10 opacity-5 text-7xl font-serif rotate-90 origin-left pointer-events-none text-white">
+            <div className="absolute top-20 left-10 opacity-5 text-7xl font-serif rotate-90 origin-left pointer-events-none text-white select-none">
               3PPLEM
             </div>
 
@@ -153,7 +162,7 @@ const Navbar = () => {
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               transition={{ delay: 0.6 }}
-              className="absolute bottom-10 left-10 right-10 text-[8px] md:text-[10px] tracking-[0.2em] text-stone-500 leading-relaxed uppercase"
+              className="absolute bottom-10 left-10 right-10 text-[8px] tracking-[0.2em] text-stone-500 leading-relaxed uppercase"
             >
               Osapa London, Lekki, Lagos • info@3pplemcontinentalhotel.ng
             </motion.div>

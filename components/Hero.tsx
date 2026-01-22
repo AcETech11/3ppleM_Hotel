@@ -53,12 +53,21 @@ const Hero = () => {
         muted
         loop
         playsInline
+        webkit-playsinline="true" // Extra fix for iOS
         poster="/hero-poster.webp" 
-        preload="metadata"
+        preload="auto"
         className="absolute inset-0 w-full h-full object-cover z-1 opacity-60"
         style={{ filter: "brightness(0.7)" }}
       >
-        <source src="https://3pplemcontinentalhotel.vercel.app/hero-video.mp4" type="video/mp4" />
+        {/* Try as video/mp4 first - even if it's a .MOV, most modern browsers treat them the same if the codec is H.264 */}
+        <source 
+          src="https://www.dropbox.com/scl/fi/dqzc7or6l1htlhr6yrnb2/3ppleM_Video.MOV?rlkey=0hoo8wmsznijxaopa3tw7ry4o&st=8xegssbe&raw=1" 
+          type="video/mp4" 
+        />
+        <source 
+          src="https://www.dropbox.com/scl/fi/dqzc7or6l1htlhr6yrnb2/3ppleM_Video.MOV?rlkey=0hoo8wmsznijxaopa3tw7ry4o&st=8xegssbe&raw=1" 
+          type="video/quicktime" 
+        />
       </video>
 
       {/* 3. Gradient Overlays for Readability */}

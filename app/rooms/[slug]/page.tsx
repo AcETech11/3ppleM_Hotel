@@ -76,11 +76,25 @@ export default function RoomDetails() {
       {/* 2. DESCRIPTION & VIDEO TOUR */}
       <section className="max-w-7xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-12 gap-20">
         <div className="lg:col-span-7">
-          <span className="text-[10px] text-[#C5A059] uppercase tracking-[0.5em] mb-6 block">The Suite Experience</span>
+          <span className="text-[10px] text-[#C5A059] uppercase tracking-[0.5em] mb-6 block">
+            The Suite Experience
+          </span>
+          
           <div className="prose prose-invert prose-stone max-w-none prose-p:text-stone-400 prose-p:tracking-wide prose-p:leading-relaxed font-sans text-lg">
             <PortableText 
                 value={room.details} 
                 components={portableTextComponents}/>
+          </div>
+
+          {/* Policy Notice Section */}
+          <div className="mt-12 p-6 border border-white/5 bg-white/[0.02] rounded-sm">
+            <p className="font-sans text-xs md:text-sm tracking-widest leading-loose text-stone-400 uppercase">
+              Please note: our rooms are strictly{" "}
+              <span className="text-red-500 font-bold border-b border-red-500/30">
+                Non-Smoking
+              </span>. 
+              For your comfort, a refined smoking lounge is available at the ROOFTOP.
+            </p>
           </div>
         </div>
 
@@ -130,7 +144,7 @@ export default function RoomDetails() {
                 alt={img.alt || room.title} 
                 width={1000} 
                 height={800} 
-                className="w-full h-auto grayscale group-hover:grayscale-0 transition-all duration-700"
+                className="w-full h-auto transition-all duration-700"
               />
             </motion.div>
           ))}
@@ -153,10 +167,7 @@ export default function RoomDetails() {
           </h2>
           
           <Link 
-            href={`https://wa.me/2348170777774?text=${encodeURIComponent(
-              `Hello, I would love to know if the ${room.title} is available for today?`
-            )}`}
-            target="_blank"
+            href='/reserve'
             rel="noopener noreferrer"
             className="group inline-flex items-center gap-6 px-12 py-6 border border-[#C5A059] text-[#C5A059] text-xs font-bold uppercase tracking-[0.4em] hover:bg-[#C5A059] hover:text-black transition-all duration-500"
           >

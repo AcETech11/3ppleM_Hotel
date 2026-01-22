@@ -5,7 +5,7 @@ import Hero from "@/components/Hero";
 import Journal from "@/components/Journal";
 import Navbar from "@/components/Navbar";
 import Rooms from "@/components/Rooms";
-import Testimonials from "@/components/Testimonials";
+import TestimonialSection from "@/components/TestimonialsSection";
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
       <Experience/>
       <Rooms/>
       <Dining/>
-      <Testimonials/>
+      <TestimonialSection/>
       <Gallery/>
       <Journal/>
     </main>

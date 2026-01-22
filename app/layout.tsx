@@ -73,7 +73,7 @@ export default function RootLayout({
         className={`${cormorant.variable} ${jakarta.variable} font-sans antialiased bg-[#0D0D0D] text-white`}
       >
         {/* Navbar added here so it stays consistent across all pages */}
-        <Navbar />
+        {/* <Navbar /> */}
         
         {/* main tag helps SEO 'spiders' identify your primary content */}
         <main className="relative min-h-screen">

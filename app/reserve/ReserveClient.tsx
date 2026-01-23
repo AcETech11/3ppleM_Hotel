@@ -73,7 +73,7 @@ export default function ReservationPage() {
       `*Guests:* ${booking.guests}%0A` +
       `*Total:* ₦${totalPrice.toLocaleString()}%0A` +
       `--------------------------%0A` +
-      `*Notes:* ${booking.notes || "None"}`;
+      `*from: 3pple M Continental Hotel & Suites Website*`;
 
     window.open(`https://wa.me/2348170777774?text=${message}`, "_blank");
   };
@@ -126,7 +126,7 @@ export default function ReservationPage() {
                 <label className="text-[10px] uppercase tracking-widest text-stone-500 font-bold flex items-center gap-2">
                     <Users size={14} className="text-[#C5A059]" /> Party Size
                  </label>
-                 <input type="number" min="1" className="w-full bg-transparent border-b border-white/10 py-4 outline-none focus:border-[#C5A059] text-sm"
+                 <input type="number" min="0" max="10" className="w-full bg-transparent border-b border-white/10 py-4 outline-none focus:border-[#C5A059] text-sm"
                    value={booking.guests} onChange={(e) => setBooking({...booking, guests: parseInt(e.target.value) || 1})} />
               </div>
             </section>

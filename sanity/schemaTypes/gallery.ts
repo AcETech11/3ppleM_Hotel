@@ -1,67 +1,62 @@
-import {ImagesIcon} from '@sanity/icons'
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {ImageIcon} from '@sanity/icons'
+import {defineField, defineType} from 'sanity'
 
 export const galleryType = defineType({
   name: 'gallery',
-  title: 'Gallery',
+  title: 'Gallery Items',
   type: 'document',
-  icon: ImagesIcon,
+  icon: ImageIcon,
   fields: [
     defineField({
-      name: 'name',
-      title: 'Gallery Name',
+      name: 'title',
+      title: 'Image Title',
       type: 'string',
-      description: 'The display name for this set of photos.',
+      description: 'Internal name or title for the image (e.g., Executive Suite Morning)',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'category',
-      title: 'Category',
-      type: 'reference',
-      to: [{type: 'category'}],
-      description: 'Which section of the hotel does this belong to?',
-      validation: (Rule) => Rule.required(),
-    }),
+        name: 'category',
+        title: 'Category',
+        type: 'reference',
+        to: [{type: 'category'}],
+        description: 'Which section of the hotel does this belong to?',
+        validation: (Rule) => Rule.required(),
+        }),
     defineField({
-      name: 'images',
-      title: 'Images',
-      type: 'array',
-      options: {
-        layout: 'grid',
-      },
-      of: [
-        defineArrayMember({
-          type: 'image',
-          options: {hotspot: true},
-          fields: [
-            defineField({
-              name: 'alt',
-              type: 'string',
-              title: 'Alt Text',
-              description: 'Crucial for SEO and accessibility.',
-            }),
-            defineField({
-              name: 'caption',
-              type: 'string',
-              title: 'Caption',
-            }),
-          ],
+      name: 'image',
+      title: 'Main Image',
+      type: 'image',
+      options: {hotspot: true},
+      fields: [
+        defineField({
+          name: 'alt',
+          type: 'string',
+          title: 'Alt Text',
+          description: 'Crucial for SEO (Osapa London Keywords).',
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: 'caption',
+          type: 'string',
+          title: 'Caption',
+          description: 'The elegant description guests see on the site.',
         }),
       ],
-      validation: (Rule) => Rule.required().min(1),
+      validation: (Rule) => Rule.required(),
     }),
   ],
-  preview: {
+ preview: {
     select: {
-      title: 'name',
-      category: 'category.title',
-      media: 'images.0',
+      title: 'title',
+      categoryTitle: 'category.title', // Follow the reference to get the actual name
+      media: 'image',
     },
-    prepare({title, category, media}) {
+    prepare(selection) {
+      const {title, categoryTitle, media} = selection
       return {
-        title,
-        subtitle: category ? `In: ${category}` : 'No category assigned',
-        media,
+        title: title,
+        subtitle: categoryTitle ? `Category: ${categoryTitle}` : 'No Category',
+        media: media,
       }
     },
   },

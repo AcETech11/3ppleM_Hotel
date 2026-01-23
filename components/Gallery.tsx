@@ -3,24 +3,29 @@ import { client } from "@/lib/sanity/client";
 import GalleryClient from "./GalleryClient";
 
 export default async function GallerySection() {
-  const query = `*[_type == "gallery"] | order(_createdAt desc) {
-    "photos": images[]{
-      "url": asset->url,
-      caption,
+  // NEW QUERY: Fetch individual 'gallery' documents
+  // We project 'url' explicitly so GalleryClient can find it easily
+  const query = `*[_type == "gallery"] | order(_createdAt desc) [0...12] {
+    _id,
+    title,
+    "category": category->title,
+    "url": image.asset->url,
+    "image": image {
+      asset->,
       alt,
-      "metadata": asset->metadata
+      caption
     }
-  }[0...2]`;
+  }`;
 
   const data = await client.fetch(query, {}, {
     next: { 
       tags: ["gallery"],
-      revalidate: 3600 
+      revalidate: 60 // Lowered for development so you see changes faster
     }
   });
 
-  // Flatten the array of arrays on the server
-  const flattenedPhotos = data?.flatMap((g: any) => g.photos || []).slice(0, 6) || [];
+  // No need to flatMap anymore because documents are individual, not nested arrays
+  const items = data || [];
 
-  return <GalleryClient initialItems={flattenedPhotos} />;
+  return <GalleryClient initialItems={items} />;
 }

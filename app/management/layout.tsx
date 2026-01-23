@@ -61,7 +61,7 @@ export default function ManagementLayout({ children }: { children: React.ReactNo
           <div className="p-8 flex flex-col h-full">
             <div className="flex justify-between items-center mb-12">
               <Image 
-                src="/3ppleM_logo.png" 
+                src="/3ppleM_Logo.png" 
                 alt="3PPLEM Logo" 
                 width={140} 
                 height={60} 

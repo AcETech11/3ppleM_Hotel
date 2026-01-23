@@ -16,23 +16,35 @@ export default function GalleryClient() {
 
   useEffect(() => {
     const fetchGallery = async () => {
-      const query = `*[_type == "gallery"] | order(_createdAt desc) {
-        name,
-        images[]{
-          asset,
-          alt,
-          caption
-        }
-      }`;
-      const data = await client.fetch(query);
-      
-      const catNames = ["All", ...new Set(data.map((g: any) => g.name))];
-      setCategories(catNames as string[]);
+      try {
+        const query = `*[_type == "gallery"] | order(_createdAt desc) {
+          name,
+          images[]{
+            asset,
+            alt,
+            caption
+          }
+        }`;
+        const data = await client.fetch(query);
+        
+        // 1. Safety check: If no data, stop here.
+        if (!data || data.length === 0) return;
 
-      const allImages = data.flatMap((g: any) => 
-        g.images.map((img: any) => ({ ...img, category: g.name }))
-      );
-      setItems(allImages);
+        // 2. Safely get category names
+        const catNames = ["All", ...new Set(data.filter((g: any) => g.name).map((g: any) => g.name))];
+        setCategories(catNames as string[]);
+
+        // 3. Safely flatten images
+        const allImages = data.flatMap((g: any) => 
+          (g.images || []).map((img: any) => ({ 
+            ...img, 
+            category: g.name || "General" 
+          }))
+        );
+        setItems(allImages);
+      } catch (error) {
+        console.error("Gallery Fetch Error:", error);
+      }
     };
     fetchGallery();
   }, []);
